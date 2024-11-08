@@ -1,12 +1,10 @@
 package com.example.tobi.springbootbasicboard.service;
 
 import com.example.tobi.springbootbasicboard.dto.BoardDeleteRequestDTO;
-import com.example.tobi.springbootbasicboard.dto.BoardUpdateRequestDTO;
 import com.example.tobi.springbootbasicboard.mapper.BoardMapper;
 import com.example.tobi.springbootbasicboard.model.Board;
 import com.example.tobi.springbootbasicboard.model.Paging;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,25 +63,26 @@ public class BoardService {
         fileService.deleteFile(request.getFilePath());
     }
 
-
-    public void updateBoard(Long id, BoardUpdateRequestDTO boardUpdateRequestDTO) throws NotFoundException {
-        // 게시글 조회
-        Board existingBoard = boardMapper.selectBoardDetail(id);
-        if (existingBoard == null) {
-            throw new NotFoundException("게시글을 찾을 수 없습니다.");
+    public void updateArticle(Long id, String title, String content, Boolean fileFlag, String filePath, MultipartFile file) {
+        // fileFlag == false or true
+        System.out.println("flag :: " + fileFlag);
+        String path = null;
+        if (fileFlag) {
+            fileService.deleteFile(filePath);
+            if (!file.isEmpty()) {
+                path = fileService.fileUpload(file);
+            }
+        } else {
+            path = filePath;
         }
 
-        // 수정할 필드만 업데이트
-        existingBoard.setTitle(boardUpdateRequestDTO.getTitle());
-        existingBoard.setContent(boardUpdateRequestDTO.getContent());
-
-        // 파일이 있는 경우 파일 처리 추가
-        MultipartFile file = boardUpdateRequestDTO.getFile();
-
-
-        // 수정된 게시글을 DB에 업데이트
-        boardMapper.update(existingBoard);
+        boardMapper.updateArticle(
+                Board.builder()
+                        .id(id)
+                        .title(title)
+                        .content(content)
+                        .filePath(path)
+                        .build()
+        );
     }
-
-
 }

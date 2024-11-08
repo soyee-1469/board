@@ -13,5 +13,5 @@ public interface BoardMapper {
     Board selectBoardDetail(long id);
     void saveArticle(Board board);
     void deleteBoardById(long id);
-    void update(Board board);
+    void updateArticle(Board board);
 }

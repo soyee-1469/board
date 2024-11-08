@@ -1,13 +1,13 @@
 package com.example.tobi.springbootbasicboard.controller;
 
-import com.example.tobi.springbootbasicboard.dto.*;
+import com.example.tobi.springbootbasicboard.dto.BoardDeleteRequestDTO;
+import com.example.tobi.springbootbasicboard.dto.BoardDetailResponseDTO;
+import com.example.tobi.springbootbasicboard.dto.BoardListResponseDTO;
 import com.example.tobi.springbootbasicboard.model.Board;
 import com.example.tobi.springbootbasicboard.service.BoardService;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -69,6 +69,19 @@ public class BoardApiController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping
+    public ResponseEntity<Void> updateArticle(
+            @RequestParam("title") String title,
+            @RequestParam("hiddenId") Long id,
+            @RequestParam("content") String content,
+            @RequestParam("hiddenFileFlag") Boolean fileFlag,
+            @RequestParam("hiddenFilePath") String filePath,
+            @RequestPart("file") MultipartFile file
+    ) {
+        boardService.updateArticle(id, title, content, fileFlag, filePath, file);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/file/download/{fileName}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws UnsupportedEncodingException {
         Resource resource = boardService.downloadFile(fileName);
@@ -91,41 +104,4 @@ public class BoardApiController {
         boardService.deleteArticle(id, request);
         return ResponseEntity.ok("게시글이 성공적으로 삭제되었습니다.");
     }
-
-    // 게시글 수정 요청 처리
-    @PutMapping("/{id}")
-    public ResponseEntity<BoardUpdateResponseDTO> updateBoard(
-            @PathVariable Long id, // 게시글 ID
-            @RequestParam("title") String title,
-            @RequestParam("hiddenUserId") String userId,
-            @RequestParam("content") String content,
-            @RequestPart(value = "file", required = false) MultipartFile file // 파일은 선택적
-
-    ) {
-
-        try {
-            // DTO 객체 생성
-            BoardUpdateRequestDTO boardUpdateRequestDTO = new BoardUpdateRequestDTO();
-            boardUpdateRequestDTO.setTitle(title);
-            boardUpdateRequestDTO.setContent(content);
-            boardUpdateRequestDTO.setFile(file);
-            System.out.println(id+title+userId+content+file);
-            // 게시글 업데이트
-            boardService.updateBoard(id, boardUpdateRequestDTO);
-
-            return ResponseEntity.ok(BoardUpdateResponseDTO.builder()
-                    .message("게시글 수정 성공")
-                    .build());
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BoardUpdateResponseDTO.builder()
-                    .message("게시글을 찾을 수 없습니다.")
-                    .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(BoardUpdateResponseDTO.builder()
-                    .message("게시글 수정에 실패했습니다.")
-                    .build());
-        }
-    }
-
-
 }

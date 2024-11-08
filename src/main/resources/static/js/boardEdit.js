@@ -5,6 +5,7 @@ $(document).ready(() => {
     saved();
     fileChanged(); // 오타 수정
     loadBoardDetail();
+
 });
 let loadBoardDetail = () => {
     // 게시글 상세 정보를 불러오는 AJAX 요청

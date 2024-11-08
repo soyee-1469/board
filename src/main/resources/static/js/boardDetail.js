@@ -2,11 +2,12 @@
 $(document).ready(() => {
     checkSession();
     loadBoardDetail();
-    $('#editBtn').click(function() {
-        const boardId = $('#hiddenId').val(); // 게시글 ID 가져오기
-        location.href = `/edit/${boardId}`; // 수정 페이지로 이동
-    });
 });
+
+let editArticle = () => {
+    let resourceId = $('#hiddenId').val();
+    window.location.href = "/update/" + resourceId;
+}
 
 let deleteArticle = () => {
 

@@ -46,9 +46,12 @@
         WHERE id = #{id};
     </delete>
 
-    <update id="update" parameterType="com.example.tobi.springbootbasicboard.model.Board">
+    <update id="updateArticle" parameterType="com.example.tobi.springbootbasicboard.model.Board">
         UPDATE article
-        SET user_id = #{userId}, title = #{title},content = #{content}, file_path = #{filePath} WHERE id = #{id}
+        SET
+            title = #{title}, content = #{content}, file_path = #{filePath}
+        WHERE
+            id = #{id};
     </update>
 
 </mapper>
